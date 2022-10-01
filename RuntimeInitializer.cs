@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-[HelpURL("https://docs.unity3d.com/ScriptReference/RuntimeInitializerLoadType.html")]
+[HelpURL("https://docs.unity3d.com/ScriptReference/RuntimeInitializeLoadType.html")]
 public class RuntimeInitializer : ScriptableObject
 {
     private static string fileName = "RuntimeInitializeSettings";
@@ -70,7 +70,7 @@ public class RuntimeInitializer : ScriptableObject
             EditorUtility.FocusProjectWindow();
             Selection.activeObject = asset;
 
-            Debug.Log("Runtime Initialize Settings asset created, more details please check https://docs.unity3d.com/ScriptReference/RuntimeInitializerLoadType.html");
+            Debug.Log("Runtime Initialize Settings asset created, more details please check https://docs.unity3d.com/ScriptReference/RuntimeInitializeLoadType.html");
         }
     }
 #endif
