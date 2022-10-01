@@ -1,6 +1,9 @@
 # Unity Runtime Initializer
 Just manage one asset file to initialize any Prefab by the runtime, so Prefab will initialize one by one whatever what scene you are running.
 
+# How To Install
+Just copy the "RuntimeInitializer.cs" to your project Assets folder.
+
 # How To Use
 - In the Unity Editor, go to menu bar Assets > Create > Runtime Initialize Settings.
 - Edit the "RuntimeInitializeSettings" file, and choose any prefab you run to initialize by the load type.
