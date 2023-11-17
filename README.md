@@ -5,8 +5,8 @@ Just manage one asset file to initialize any Prefab by the runtime, so Prefab wi
 Just copy the "RuntimeInitializer.cs" to your project Assets folder.
 
 # How To Use
-- In the Unity Editor, go to menu bar Assets > Create > Runtime Initialize Settings.
-- Edit the "RuntimeInitializeSettings" file, and choose any prefab you run to initialize by the load type.
+- In the Unity Editor, go to menu bar Assets > Create > RuntimeInitializerSetting.
+- Edit the "RuntimeInitializeSetting" asset file, and choose any prefab you want to initialize by the load type.
 
 # Load Type
 More details about the load type, please check: https://docs.unity3d.com/ScriptReference/RuntimeInitializeLoadType.html
