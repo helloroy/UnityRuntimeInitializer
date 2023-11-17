@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using System.IO;
 
-[HelpURL("https://docs.unity3d.com/ScriptReference/RuntimeInitializeLoadType.html")]
+[HelpURL("https://docs.unity3d.com/ScriptReference/RuntimeInitializeOnLoadMethodAttribute.html")]
 public class RuntimeInitializer : ScriptableObject
 {
     private static string fileName = "RuntimeInitializerSetting"; // Change this if needed, but remember to rename the exists asset as well.
@@ -19,10 +19,15 @@ public class RuntimeInitializer : ScriptableObject
         }
     }
     [SerializeField] private bool debug;
+    [Tooltip("When starting up the runtime. Called before the first scene is loaded.")]
     [SerializeField] private GameObject[] subsystemRegistration;
+    [Tooltip("Before the splash screen is shown. At this time the objects of the first scene have not been loaded yet.")]
     [SerializeField] private GameObject[] beforeSplashScreen;
+    [Tooltip("When all assemblies are loaded and preloaded assets are initialized. At this time the objects of the first scene have not been loaded yet.")]
     [SerializeField] private GameObject[] afterAssembliesLoaded;
+    [Tooltip("When the first scene's objects are loaded into memory but before Awake has been called.")]
     [SerializeField] private GameObject[] beforeSceneLoad;
+    [Tooltip("When the first scene's objects are loaded into memory and after Awake has been called.")]
     [SerializeField] private GameObject[] afterSceneLoad;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
