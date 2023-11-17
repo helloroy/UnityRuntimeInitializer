@@ -1,10 +1,11 @@
 using UnityEditor;
 using UnityEngine;
+using System.IO;
 
 [HelpURL("https://docs.unity3d.com/ScriptReference/RuntimeInitializeLoadType.html")]
 public class RuntimeInitializer : ScriptableObject
 {
-    private static string fileName = "RuntimeInitializeSettings";
+    private static string fileName = "RuntimeInitializerSetting"; // Change this if needed, but remember to rename the exists asset as well.
     private static RuntimeInitializer _instance;
     private static RuntimeInitializer Instance
     {
@@ -17,60 +18,77 @@ public class RuntimeInitializer : ScriptableObject
             return _instance;
         }
     }
-
     [SerializeField] private bool debug;
+    [SerializeField] private GameObject[] subsystemRegistration;
     [SerializeField] private GameObject[] beforeSplashScreen;
+    [SerializeField] private GameObject[] afterAssembliesLoaded;
     [SerializeField] private GameObject[] beforeSceneLoad;
     [SerializeField] private GameObject[] afterSceneLoad;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void SubsystemRegistration()
+    {
+        if (Instance && Instance.debug == true) { Debug.Log($"{nameof(RuntimeInitializer)}: Start instantiation by <b>{fileName}</b>", Instance); }
+        if (Instance) InstantiateAll(Instance.subsystemRegistration, RuntimeInitializeLoadType.SubsystemRegistration);
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
     static void BeforeSplashScreen()
     {
-        if(Instance) InstantiateAll(Instance.beforeSplashScreen);
+        if (Instance) InstantiateAll(Instance.beforeSplashScreen, RuntimeInitializeLoadType.BeforeSplashScreen);
+    }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+    static void AfterAssembliesLoaded()
+    {
+        if (Instance) InstantiateAll(Instance.afterAssembliesLoaded, RuntimeInitializeLoadType.AfterAssembliesLoaded);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     static void BeforeSceneLoad()
     {
-        if (Instance) InstantiateAll(Instance.beforeSceneLoad);
+        if (Instance) InstantiateAll(Instance.beforeSceneLoad, RuntimeInitializeLoadType.BeforeSceneLoad);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void AfterSceneLoad()
     {
-        if (Instance) InstantiateAll(Instance.afterSceneLoad);
+        if (Instance) InstantiateAll(Instance.afterSceneLoad, RuntimeInitializeLoadType.AfterSceneLoad);
     }
 
-    static void InstantiateAll(GameObject[] objectList)
+    static void InstantiateAll(GameObject[] objectList, RuntimeInitializeLoadType type)
     {
         foreach (GameObject prefab in objectList)
         {
             GameObject addedPrefab = Instantiate(prefab);
             addedPrefab.name = prefab.name;
-            if (Instance.debug) Debug.Log($"Instantiate {addedPrefab.name}", prefab);
+            if (Instance.debug) Debug.Log($"{nameof(RuntimeInitializer)}: Instantiate <b>{addedPrefab.name}</b> on {type}", prefab);
         }
     }
 
 #if UNITY_EDITOR
-    [MenuItem("Assets/Create/Runtime Initialize Settings")]
-    static void Create()
+    [MenuItem("Assets/Create/RuntimeInitializerSetting")]
+    public static void Create()
     {
-        RuntimeInitializer[] assets = Resources.LoadAll<RuntimeInitializer>("");
-
-        if (assets.Length > 0)
+        if (!Directory.Exists("Assets/Resources"))
         {
-            Debug.LogWarning($"StartUp asset exists already.", assets[0]);
+            Directory.CreateDirectory("Assets/Resources");
+        }
+
+        RuntimeInitializer asset = Resources.Load<RuntimeInitializer>(fileName);
+
+        if (asset)
+        {
+            Debug.LogWarning($"{nameof(RuntimeInitializer)}: <b>{fileName}</b> asset exists already, you may rename the exists one.", asset);
         }
         else
         {
-            RuntimeInitializer asset = CreateInstance<RuntimeInitializer>();
-            AssetDatabase.CreateAsset(asset, "Assets/Resources/"+ fileName +".asset");
+            RuntimeInitializer newAsset = CreateInstance<RuntimeInitializer>();
+            AssetDatabase.CreateAsset(newAsset, "Assets/Resources/" + fileName + ".asset");
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             EditorUtility.FocusProjectWindow();
-            Selection.activeObject = asset;
-
-            Debug.Log("Runtime Initialize Settings asset created, more details please check https://docs.unity3d.com/ScriptReference/RuntimeInitializeLoadType.html");
+            Selection.activeObject = newAsset;
         }
     }
 #endif
